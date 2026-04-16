@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Poli;
+use App\Events\AntrianUpdate;
 use Illuminate\Http\Request;
 
 class PoliController extends Controller
@@ -53,7 +54,7 @@ class PoliController extends Controller
     public function edit(string $id)
     {
         $poli = Poli::findOrFail($id);
-        return view('admin.poli.show', compact('poli'));
+        return view('admin.poli.edit', compact('poli'));
     }
 
     /**
@@ -79,5 +80,16 @@ class PoliController extends Controller
         $poli = Poli::findOrFail($id);
         $poli->delete();
         return redirect()->route('polis.index')->with('success', 'Poli berhasil dihapus.');
+    }
+
+    public function panggilAntrian(Request $request)
+    {
+        // ... Logika update status antrian di database ...
+        // $pendaftaran->update(['status' => 'dipanggil']);
+
+        // KIRIM SIGNAL REAL-TIME KE SEMUA PASIEN
+        broadcast(new AntrianUpdate($pendaftaran->jadwal_periksa_id, $pendaftaran->nomor_antrian));
+
+        return redirect()->back();
     }
 }

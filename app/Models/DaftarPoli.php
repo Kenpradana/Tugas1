@@ -12,7 +12,8 @@ class DaftarPoli extends Model
         'id_jadwal',
         'id_pasien',
         'keluhan',
-        'no_antrian'
+        'no_antrian',
+        'no_rekam_medis'
     ];
 
     public function pasien()

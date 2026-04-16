@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Poli;
 
    class User extends Authenticatable
 {
@@ -19,14 +20,14 @@ use Illuminate\Notifications\Notifiable;
      * @var list<string>
      */
     protected $fillable = [
-        'nama',
-        'alamat',
-        'no_ktp',
-        'no_hp',
-        'no_rm',
+        'nama',       // <-- PASTIKAN INI ADA
+        'email',
+        'no_ktp',     // <-- PASTIKAN INI ADA
+        'no_hp',      // <-- PASTIKAN INI ADA
+        'alamat',     // <-- PASTIKAN INI ADA
+        'password',
         'role',
         'id_poli',
-        'email',
         'password',
 
     ];
@@ -55,14 +56,15 @@ use Illuminate\Notifications\Notifiable;
     }
 
     public function poli()
-    {
-        return $this->belongsTo(Poli::class, 'id_poli');
-    }
+        {
+            return $this->belongsTo(Poli::class, 'id_poli', 'id');
+        }
 
     public function jadwalPeriksa()
     {
-        return $this->hasMany(JadwalPeriksa::class, 'id_dokter');
+        return $this->hasMany(JadwalPeriksa::class, 'dokter_id');
     }
 
+    
 }
 

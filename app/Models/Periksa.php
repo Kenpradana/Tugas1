@@ -10,9 +10,14 @@ class Periksa extends Model
 
     protected $fillable = [
         'id_daftar_poli',
-        'tgl_periksa',
+        'tanggal_periksa',
         'catatan',
         'biaya_periksa',
+    ];
+
+    // TAMBAHKAN BAGIAN INI:
+    protected $casts = [
+        'tanggal_periksa' => 'datetime', 
     ];
 
     public function daftarPoli()
@@ -24,4 +29,9 @@ class Periksa extends Model
     {
         return $this->hasMany(DetailPeriksa::class, 'id_periksa');
     }
+
+    public function pembayaran()
+{
+    return $this->hasOne(Pembayaran::class, 'periksa_id'); // <-- UBAH JADI INI
+}
 }

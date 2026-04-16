@@ -3,7 +3,8 @@
     {{-- ================= BRAND ================= --}}
     <div class="px-5 py-5 border-b border-white/10">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('images/logo-bengkot.png') }}" class="w-10 h-10 rounded-xl object-cover">
+            <img src="{{ asset('Logo_Bengkod1.jpg') }}" alt="Logo"
+            class="w-[50px] h-[50px] rounded-[16px] object-cover mb-[1px] block">
 
             <div>
                 <div class="font-bold text-white text-lg leading-tight">
@@ -62,6 +63,30 @@
                 Manajemen Poli
             </a>
 
+            <a href="{{ route('dokters.index') }}"
+                class="{{ $baseLink }} {{ request()->routeIs('dokters.*') ? $active : $inactive }}">
+                <i class="fas fa-user-doctor w-4 text-center"></i>
+                Manajemen Dokter
+            </a>
+
+            <a href="{{ route('pasiens.index') }}"
+                class="{{ $baseLink }} {{ request()->routeIs('pasiens.*') ? $active : $inactive }}">
+                <i class="fas fa-users w-4 text-center"></i>
+                Manajemen Pasien
+            </a>
+
+             <a href="{{ route('obats.index') }}"
+                class="{{ $baseLink }} {{ request()->routeIs('obats.*') ? $active : $inactive }}">
+                <i class="fas fa-pills w-4 text-center"></i>
+                Manajemen Obat
+            </a>
+            <a href="{{ route('admin.pembayaran.index') }}"
+                class="{{ $baseLink }} {{ request()->routeIs('admin.pembayaran.*') ? $active : $inactive }}">
+                <i class="fas fa-file-invoice-dollar w-4 text-center"></i>
+                Verifikasi Pembayaran
+            </a>
+            
+
         </div>
         @endif
 
@@ -79,6 +104,12 @@
                 class="{{ $baseLink }} {{ request()->routeIs('pasien.dashboard') ? $active : $inactive }}">
                 <i class="fas fa-house-medical w-4 text-center"></i>
                 Dashboard Pasien
+            </a>
+
+            <a href="{{ route('pasien.pembayaran.index') }}"
+                class="{{ $baseLink }} {{ request()->routeIs('pasien.pembayaran.*') ? $active : $inactive }}">
+                <i class="fas fa-money-bill-wave w-4 text-center"></i>
+                Pembayaran
             </a>
 
 
@@ -99,6 +130,24 @@
                 class="{{ $baseLink }} {{ request()->routeIs('dokter.dashboard') ? $active : $inactive }}">
                 <i class="fas fa-stethoscope w-4 text-center"></i>
                 Dashboard Dokter
+            </a>
+
+            <a href="{{ route('dokter.jadwal.index') }}" 
+               class="{{ $baseLink }} {{ request()->routeIs('dokter.jadwal.*') ? $active : $inactive }}">
+                <i class="fas fa-calendar-days w-4 text-center"></i>
+                Jadwal Periksa
+            </a>
+
+            <a href="{{ route('dokter.periksa.index') }}" 
+               class="{{ $baseLink }} {{ request()->routeIs('dokter.periksa.index') ? $active : $inactive }}">
+                <i class="fas fa-stethoscope w-4 text-center"></i>
+                Periksa Pasien
+            </a>
+
+            <a href="{{ route('dokter.riwayat.index') }}" 
+               class="{{ $baseLink }} {{ request()->routeIs('dokter.riwayat.*') ? $active : $inactive }}">
+                <i class="fas fa-file-medical w-4 text-center"></i>
+                Riwayat Pasien
             </a>
 
         </div>

@@ -21,11 +21,11 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             if ($user->role === 'admin') {
-                return redirect('admin.dashboard');
+                return redirect('admin/dashboard');
             } elseif ($user->role === 'dokter') {
-                return redirect('dokter.dashboard');
+                return redirect('dokter/dashboard');
             } elseif ($user->role === 'pasien') {
-                return redirect('pasien.dashboard');
+                return redirect('pasien/dashboard');
             }
         }
 
@@ -41,7 +41,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validatedData = $request([
+        $validatedData = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'alamat' => ['required', 'string', 'max:255'],
             'no_ktp' => ['required', 'string', 'max:20'],
@@ -50,14 +50,14 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        if ($user::where('no_ktp', $request->no_ktp)->exists()) {
-            return back()->withErrors([
-                'no_ktp' => 'No KTP sudah digunakan.',
-            ]);
-        }   
+        // if (user::where('no_ktp', $request->no_ktp)->exists()) {
+        //     return back()->withErrors([
+        //         'no_ktp' => 'No KTP sudah digunakan.',
+        //     ]);
+        // }   
 
         $user = User::create([
-            'name' => $validatedData['nama'],
+            'nama' => $validatedData['nama'],
             'alamat' => $validatedData['alamat'],
             'no_ktp' => $validatedData['no_ktp'],
             'no_hp' => $validatedData['no_hp'],
@@ -73,6 +73,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect ->route('login');
+        return redirect()->route('login');
     }
 }
