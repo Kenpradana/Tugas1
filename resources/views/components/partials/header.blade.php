@@ -2,7 +2,7 @@
 
     {{-- Mobile Hamburger --}}
     <button onclick="toggleSidebar()" class="btn btn-square btn-ghost lg:hidden">
-        <i data-lucide="menu" class="w-5 h-5"></i>
+    <i data-lucide="menu" class="w-5 h-5 "></i>
     </button>
 
     {{-- Breadcrumb --}}

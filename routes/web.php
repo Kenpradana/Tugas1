@@ -5,7 +5,8 @@ use App\Http\Controllers\Admin\PoliController;
 use App\Http\Controllers\Admin\PasienController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
-use App\Http\Controllers\Admin\ExportController; 
+use App\Http\Controllers\Admin\ExportController as AdminExportController; 
+use App\Http\Controllers\Dokter\ExportController as DokterExportController;
 use App\Http\Controllers\Pasien\DashboardController; // Ini untuk Pasien
 use App\Http\Controllers\Dokter\DokterController; // Ini untuk Dokter (Sesuai nama file yang tadi Anda buat)
 use App\Http\Controllers\Dokter\JadwalPeriksaController;
@@ -34,9 +35,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::resource('pasiens', PasienController::class);
     Route::resource('dokters', AdminDokterController::class);
     Route::resource('obats', ObatController::class); 
-    Route::get('/export/dokter', [ExportController::class, 'exportDokter'])->name('admin.export.dokter');
-    Route::get('/export/pasien', [ExportController::class, 'exportPasien'])->name('admin.export.pasien');
-    Route::get('/export/obat', [ExportController::class, 'exportObat'])->name('admin.export.obat'); 
+    Route::get('/export/dokter', [AdminExportController::class, 'exportDokter'])->name('admin.export.dokter');
+    Route::get('/export/pasien', [AdminExportController::class, 'exportPasien'])->name('admin.export.pasien');
+    Route::get('/export/obat', [AdminExportController::class, 'exportObat'])->name('admin.export.obat'); 
     Route::get('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'index'])->name('admin.pembayaran.index');
     Route::get('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'show'])->name('admin.pembayaran.show');
     Route::post('/pembayaran/{id}/konfirmasi', [App\Http\Controllers\Admin\PembayaranController::class, 'konfirmasi'])->name('admin.pembayaran.konfirmasi');
@@ -44,7 +45,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
 Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->group(function () {
     Route::get('/dashboard', [DokterController::class, 'index'])->name('dokter.dashboard');
-    
+
     // Tambahkan ini:
     Route::resource('jadwal', JadwalPeriksaController::class)
     ->except(['show']) // <-- MENGHAPUS ROUTE SHOW OTOMATIS
@@ -59,15 +60,15 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->group(function () 
 
     Route::get('/periksa-pasien', [PeriksaController::class, 'index'])->name('dokter.periksa.index');
     Route::get('/periksa-pasien/{id}/periksa', [PeriksaController::class, 'create'])->name('dokter.periksa.create');
-    Route::post('/periksa-pasien/{id}/periksa', [PeriksaController::class, 'store'])->name('dokter.periksa.store');
-
-    Route::get('/riwayat-pasien/export', [RiwayatController::class, 'export'])->name('dokter.riwayat.export');
+    Route::post('/periksa-pasien/{id}/periksa', [PeriksaController::class, 'store'])->name('dokter.periksa.store'); 
+    // Export Riwayat (Dokter) - PINDAH KE SINI
+    Route::get('/riwayat/export', [DokterExportController::class, 'exportRiwayat'])
+        ->name('dokter.riwayat.export');
+    Route::get('/jadwal/export', [DokterExportController::class, 'exportJadwal'])->name('dokter.jadwal.export');
 
     Route::get('/riwayat-pasien', [RiwayatController::class, 'index'])->name('dokter.riwayat.index');
-    Route::get('/riwayat-pasien/{id}', [RiwayatController::class, 'detail'])->name('dokter.riwayat.detail');
-    Route::get('/jadwal/export', [JadwalPeriksaController::class, 'export'])->name('dokter.jadwal.export');
-    
-   
+    Route::get('/riwayat-pasien/{id}', [RiwayatController::class, 'detail'])->name('dokter.riwayat.detail');    
+
 });
 
 

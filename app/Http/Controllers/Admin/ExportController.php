@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Exports\DokterExport; // Sesuaikan dengan lokasi file DokterExport Anda
 use App\Exports\PasienExport; // Sesuaikan dengan lokasi file PasienExport Anda
 use App\Exports\ObatExport; // Sesuaikan dengan lokasi file ObatExport Anda
+use App\Exports\RiwayatExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller

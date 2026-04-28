@@ -20,11 +20,11 @@ use App\Models\Poli;
      * @var list<string>
      */
     protected $fillable = [
-        'nama',       // <-- PASTIKAN INI ADA
+        'nama',       
         'email',
-        'no_ktp',     // <-- PASTIKAN INI ADA
-        'no_hp',      // <-- PASTIKAN INI ADA
-        'alamat',     // <-- PASTIKAN INI ADA
+        'no_ktp',    
+        'no_hp',     
+        'alamat',       
         'password',
         'role',
         'id_poli',

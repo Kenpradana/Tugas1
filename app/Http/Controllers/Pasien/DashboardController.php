@@ -14,12 +14,11 @@ class DashboardController extends Controller
     public function index()
     {
         
-        $today = now()->locale('id')->dayName; // Mengambil nama hari ini (Senin, Selasa, dll)
+        $today = now()->locale('id')->dayName; 
 
-        // 1. Hanya ambil jadwal yang HARI INI
         $jadwals = JadwalPeriksa::with(['dokter.poli', 'daftarPolis' => function($query) {
             $query->whereDate('created_at', today());
-        }])->where('hari', $today)->get(); // <-- TAMBAHKAN FILTER HARI INI
+        }])->where('hari', $today)->get(); 
 
         $myQueue = DaftarPoli::where('id_pasien', Auth::id()) 
                 ->whereDoesntHave('periksas')
@@ -29,7 +28,7 @@ class DashboardController extends Controller
         return view('pasien.dashboard', compact('jadwals', 'myQueue'));
     }
     
-    public function createAntrian()
+        public function createAntrian()
     {
         $sudahDaftar = DaftarPoli::where('id_pasien', Auth::id())
                         ->doesntHave('periksas')
@@ -39,24 +38,16 @@ class DashboardController extends Controller
             return redirect()->route('pasien.dashboard')->with('error', 'Anda sudah memiliki antrian aktif!');
         }
 
-        // GANTI LOGI INI:
+
         $now = date('Ym'); 
-        $prefix = $now . " - ";
+        $jumlahPasienBulanIni = DaftarPoli::where('no_rekam_medis', 'like', $now . '%')
+                                   ->distinct('id_pasien')
+                                   ->count('id_pasien');
         
-        $lastRecord = DaftarPoli::where('no_rekam_medis', 'like', $prefix . '%')
-                         ->orderBy('no_rekam_medis', 'desc')
-                         ->first();
         
-        if ($lastRecord) {
-            // Kita pecah berdasarkan " - "
-            $parts = explode(' - ', $lastRecord->no_rekam_medis);
-            $lastNum = intval(end($parts)); // Ambil bagian terakhir
-            $nextNum = $lastNum + 1;
-        } else {
-            $nextNum = 1;
-        }
+        $nextNum = $jumlahPasienBulanIni + 1;
         
-        $noRekamMedis = $prefix . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+        $noRekamMedis = $now . " - " . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
 
         $polis = Poli::all();
 
@@ -65,15 +56,15 @@ class DashboardController extends Controller
 
         public function getJadwalByPoli($id_poli)
     {
-        // KEMBALIKAN FILTER HARI INI:
-        $today = now()->locale('id')->dayName; // Contoh: Selasa
+
+        $today = now()->locale('id')->dayName; 
 
         $dokterIds = \App\Models\User::where('role', 'dokter')
                     ->where('id_poli', $id_poli)
                     ->pluck('id');
 
         $jadwals = \App\Models\JadwalPeriksa::whereIn('dokter_id', $dokterIds)
-                ->where('hari', $today) // <-- FILTER AKTIF KEMBALI (Hanya jadwal hari ini)
+                ->where('hari', $today) 
                 ->with('dokter')
                 ->get();
 

@@ -11,6 +11,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     @vite(['resources/css/app.css'])
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -81,6 +82,8 @@
                 icon.className='fas fa-expand'
             }
         }
+
+         lucide.createIcons();
     </script>
 
     @stack('scripts')

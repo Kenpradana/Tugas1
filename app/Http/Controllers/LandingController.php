@@ -28,7 +28,7 @@ class LandingController extends Controller
         $jadwalTerdekat = JadwalPeriksa::with('dokter.poli')
             ->where('hari', $hariIni) // Filter hanya hari ini
             ->orderBy('jam_mulai')
-            ->limit(2)
+            ->limit(5)
             ->get();
         // Stats
         $totalDokter  = User::where('role', 'dokter')->count();

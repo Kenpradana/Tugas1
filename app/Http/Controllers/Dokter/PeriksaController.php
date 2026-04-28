@@ -13,8 +13,7 @@ class PeriksaController extends Controller
 {
     public function index()
     {
-        $today = now()->locale('id')->dayName; // Contoh: Senin
-
+        $today = now()->locale('id')->dayName; 
         // Ambil antrian milik dokter yang login, HARI INI, dan BELUM DIPERIKSA
         $antrians = DaftarPoli::with('pasien')
                     ->whereHas('jadwalPeriksa', function($query) use ($today) {
@@ -47,47 +46,79 @@ class PeriksaController extends Controller
 
         public function store(Request $request, $id)
     {
-        $daftarPoli = DaftarPoli::findOrFail($id);
-
         $request->validate([
             'catatan'   => 'nullable|string',
-            'obat_ids' => 'required|string', // <-- UBAH INI (HAPUS _input)
+            'obat_ids'  => 'required|string', 
         ]);
 
-        // UBAH JUGA DI SINI
         $obatIds = array_filter(explode(',', $request->obat_ids));
 
         if (count($obatIds) === 0) {
             return back()->withErrors(['obat' => 'Anda harus menambahkan minimal 1 obat.'])->withInput();
         }
 
-        $totalBiaya = \App\Models\Obat::whereIn('id', $obatIds)->sum('harga');
+        // ==========================================
+        // MULAI TRANSAKSI DATABASE
+        // ==========================================
+        \DB::beginTransaction();
+        try {
+            $daftarPoli = DaftarPoli::findOrFail($id);
 
-        $periksa = \App\Models\Periksa::create([
-            'id_daftar_poli'  => $daftarPoli->id,
-            'tanggal_periksa' => now(),
-            'catatan'         => $request->catatan,
-            'biaya_periksa'  => $totalBiaya,
-        ]);
+            if ($daftarPoli->jadwalPeriksa->dokter_id != Auth::id()) {
+                abort(403, 'Anda tidak memiliki akses ke pasien ini.');
+            }
 
-        $jadwalId = $daftarPoli->id_jadwal; // Sesuaikan nama kolom foreign key jadwal kamu
-        $nomorSekarang = $daftarPoli->no_antrian;
+            // 1. CEK STOK OBAT DULU
+            foreach ($obatIds as $obatId) {
+                $obat = \App\Models\Obat::lockForUpdate()->find($obatId);
+                
+                if (!$obat || $obat->stok <= 0) {
+                    throw new \Exception("Gagal menyimpan! Stok obat '{$obat->nama_obat}' habis.");
+                }
+            }
 
-        broadcast(new AntrianUpdate($jadwalId, $nomorSekarang));
+            // 2. Hitung Total Biaya
+            $totalBiaya = \App\Models\Obat::whereIn('id', $obatIds)->sum('harga');
 
-        foreach ($obatIds as $obatId) {
-            \App\Models\DetailPeriksa::create([
-                'id_periksa' => $periksa->id,
-                'id_obat'    => $obatId,
+            // 3. Simpan Data Periksa
+            $periksa = \App\Models\Periksa::create([
+                'id_daftar_poli'  => $daftarPoli->id,
+                'tanggal_periksa' => now(),
+                'catatan'         => $request->catatan,
+                'biaya_periksa'   => $totalBiaya,
             ]);
+
+            // 4. Simpan Detail Periksa + KURANGI STOK
+            foreach ($obatIds as $obatId) {
+                \App\Models\DetailPeriksa::create([
+                    'id_periksa' => $periksa->id,
+                    'id_obat'    => $obatId,
+                    'jumlah'     => 1, // Karena form kamu mengirim ID, dianggap jumlahnya 1
+                ]);
+
+                // --- INI YANG MEMBUAT STOK BERKURANG ---
+                \App\Models\Obat::where('id', $obatId)->decrement('stok', 1);
+            }
+
+            // 5. Buat Data Pembayaran
+            \App\Models\Pembayaran::create([
+                'periksa_id' => $periksa->id, 
+                'status'     => 'menunggu'
+            ]);
+
+            // COMMIT: Simpan semuanya ke database
+            \DB::commit();
+
+        } catch (\Exception $e) {
+            // ROLLBACK: Batalkan semua jika ada obat yang stoknya habis
+            \DB::rollBack();
+            return back()->withErrors(['obat' => $e->getMessage()])->withInput();
         }
 
-        \App\Models\Pembayaran::create([
-        'periksa_id' => $periksa->id, // Pastikan variabelnya $periksa
-        'status' => 'menunggu'
-        ]);
-        
-        return redirect()->route('dokter.periksa.index')->with('success', 'Data pemeriksaan berhasil disimpan!');
+        // Broadcast WebSocket (di luar transaction)
+        broadcast(new AntrianUpdate($daftarPoli->id_jadwal, $daftarPoli->no_antrian));
+
+        return redirect()->route('dokter.periksa.index')->with('success', 'Data pemeriksaan berhasil disimpan dan stok obat dikurangi!');
 
         
     }

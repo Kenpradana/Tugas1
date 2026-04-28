@@ -22,9 +22,6 @@
                         <td>{{ $dp->jadwalPeriksa->dokter->poli->nama_poli ?? '-' }}</td>
                         <td>{{ $dp->jadwalPeriksa->dokter->nama ?? '-' }}</td>
                         
-                        {{-- PERHATIKAN BAGIAN INI: jadwalPeriksa->dokter --}}
-                        <td>{{ $dp->jadwalPeriksa->dokter->nama }}</td>
-                        
                         <td>Rp {{ number_format($periksa->biaya_periksa, 0, ',', '.') }}</td>
                         <td>
                             @if($periksa->pembayaran && $periksa->pembayaran->status == 'lunas')
@@ -51,6 +48,9 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="p-4 flex justify-center">
+            {{ $daftarPolis->links() }}
+        </div>  
     </div>
 
 </x-layouts.app>

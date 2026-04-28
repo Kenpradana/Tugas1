@@ -84,8 +84,8 @@
             </div>
         </div>
 
-            {{-- POP UP NOTIFIKASI --}}
-    <div id="popup-giliran-saya" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 display: none; style="backdrop-filter: blur(4px);">
+                {{-- POP UP NOTIFIKASI --}}
+    <div id="popup-giliran-saya" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden" style="backdrop-filter: blur(4px);">
         <div class="bg-white p-10 rounded-3xl shadow-2xl text-center border-t-8 border-green-500 max-w-sm mx-4">
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-bell text-green-500 text-3xl animate-bounce"></i>
@@ -97,11 +97,16 @@
         </div>
     </div>
 
-    {{-- SCRIPT ECHO YANG SUDAH DIPERBAIKI --}}
     <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.4.0-rc2/dist/web/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
 
     <script>
+        // TAMBAHKAN INI: Variable penanda bahwa halaman sudah aman (lebih dari 2 detik)
+        let halamanSudahSiap = false;
+        setTimeout(function() {
+            halamanSudahSiap = true;
+        }, 2000); // 2000 milidetik = 2 detik
+
         window.Echo = new Echo({
             broadcaster: 'reverb',
             key: '{{ config("broadcasting.connections.reverb.key") }}',
@@ -113,12 +118,9 @@
         });
 
         window.Echo.channel('antrian-poliklinik')
-            .subscribed(function() {
-                console.log('✅ DASHBOARD BERHASIL NYAMBUNG!');
-            })
             .listen('.antrian-update', function(e) {
                 
-                // 1. Ubah Tabel
+                // 1. UPDATE TABEL: Ini boleh langsung berubah kapanpun (aman)
                 const badge = document.getElementById('serving-' + e.jadwalId);
                 if (badge) {
                     badge.innerText = e.nomorSekarang;
@@ -130,14 +132,16 @@
                     }, 3000);
                 }
 
-                // 2. Cek Popup
-                const myJadwalId = "{{ $myQueue?->id_jadwal ?? '' }}";
-                const myNomorAntrian = "{{ $myQueue?->no_antrian ?? '' }}";
-                const myNamaPoli = "{{ $myQueue?->jadwalPeriksa?->dokter?->poli?->nama_poli ?? '' }}";
+                // 2. POP UP: WAJIB cek apakah halaman sudah siap (anti bug saat pertama kali buka)
+                if (halamanSudahSiap) {
+                    const myJadwalId = "{{ $myQueue?->id_jadwal ?? '' }}";
+                    const myNomorAntrian = "{{ $myQueue?->no_antrian ?? '' }}";
+                    const myNamaPoli = "{{ $myQueue?->jadwalPeriksa?->dokter?->poli?->nama_poli ?? '' }}";
 
-                if (myJadwalId && e.jadwalId == myJadwalId && e.nomorSekarang == myNomorAntrian) {
-                    document.getElementById('popup-isi-poli').innerText = 'Poli ' + myNamaPoli;
-                    document.getElementById('popup-giliran-saya').classList.remove('hidden');
+                    if (myJadwalId && e.jadwalId == myJadwalId && e.nomorSekarang == myNomorAntrian) {
+                        document.getElementById('popup-isi-poli').innerText = 'Poli ' + myNamaPoli;
+                        document.getElementById('popup-giliran-saya').classList.remove('hidden');
+                    }
                 }
             });
     </script>

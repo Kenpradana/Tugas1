@@ -136,7 +136,7 @@
                         </h1>
 
                         <p class="animate-fade-up-d2 opacity-0-init text-neutral-500 text-lg leading-relaxed mt-6 max-w-lg">
-                            Poliklinik Sehat menyediakan layanan kesehatan komprehensif dengan dokter berpengalaman dan fasilitas modern.
+                            Poliklinik menyediakan layanan kesehatan komprehensif dengan dokter berpengalaman dan fasilitas modern.
                         </p>
 
                         <div class="animate-fade-up-d3 opacity-0-init flex flex-wrap gap-3 mt-8">
@@ -353,9 +353,9 @@
                                 <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/>
                             </svg>
                         </div>
-                        <span class="font-semibold text-neutral-200 text-sm">PoliklinikSehat</span>
+                        <span class="font-semibold text-neutral-200 text-sm">Poliklinik</span>
                     </a>
-                    <div class="text-sm">&copy; 2025 Poliklinik Sehat. Hak cipta dilindungi.</div>
+                    <div class="text-sm">&copy; 2025 Poliklinik. Hak cipta dilindungi.</div>
                 </div>
             </div>
         </footer>

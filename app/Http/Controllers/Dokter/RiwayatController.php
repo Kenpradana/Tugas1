@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Periksa;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use App\Exports\RiwayatExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class RiwayatController extends Controller
@@ -14,12 +13,12 @@ class RiwayatController extends Controller
     public function index()
     {
         // Ambil semua data periksa yang dilakukan oleh dokter yang sedang login
-        $periksas = Periksa::with(['daftarPoli.pasien', 'daftarPoli.jadwalPeriksa'])
+         $periksas = Periksa::with(['daftarPoli.pasien', 'daftarPoli.jadwalPeriksa'])
                     ->whereHas('daftarPoli.jadwalPeriksa', function($query) {
                         $query->where('dokter_id', Auth::id());
                     })
                     ->orderBy('tanggal_periksa', 'desc')
-                    ->get();
+                    ->paginate(10); // ← Yang ini saja yang diganti
 
         return view('dokter.riwayat.index', compact('periksas'));
     }
@@ -42,8 +41,5 @@ class RiwayatController extends Controller
 
         return view('dokter.riwayat.detail', compact('pasien', 'riwayats'));
     }
-    public function export()
-    {
-        return Excel::download(new RiwayatExport, 'riwayat-pasien-saya.xlsx');
-    }
+    
 }

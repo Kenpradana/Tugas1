@@ -15,10 +15,11 @@ class PembayaranController extends Controller
             ->whereHas('periksas') 
             ->with([
                 'periksas.pembayaran', 
-                'jadwalPeriksa.poli',       // PERHATIKAN: ADA jadwalPeriksa DI DEPANNYA
-                'jadwalPeriksa.dokter'       // PERHATIKAN: ADA jadwalPeriksa DI DEPANNYA
+                'jadwalPeriksa.poli',       
+                'jadwalPeriksa.dokter'       
             ]) 
-            ->get();
+            ->orderBy('created_at', 'desc') 
+            ->paginate(10);     
 
         return view('pasien.pembayaran.index', compact('daftarPolis'));
     }
@@ -26,17 +27,15 @@ class PembayaranController extends Controller
     public function uploadBukti(Request $request, $id)
     {
         $request->validate([
-            'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Maksimal 2MB
+            'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:2048', 
         ]);
 
         $pembayaran = Pembayaran::where('periksa_id', $id)->firstOrFail();
 
-        // Upload foto ke folder storage/app/public/bukti_bayar
         if ($request->hasFile('bukti_bayar')) {
         $file = $request->file('bukti_bayar');
         $namaFile = time() . '_' . auth()->user()->id . '.' . $file->getClientOriginalExtension();
         
-        // TAMBAHKAN KATA 'public' DI AKHIR SINI:
         $file->storeAs('bukti_bayar', $namaFile, 'public'); 
 
         $pembayaran->update([

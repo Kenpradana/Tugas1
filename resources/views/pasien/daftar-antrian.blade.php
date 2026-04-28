@@ -2,7 +2,7 @@
 
     <div class="p-6 max-w-2xl mx-auto">
         <div class="card bg-base-100 shadow-md rounded-2xl border border-gray-100">
-            <div classankan class="card-body">
+            <div class="card-body">
                 <h2 class="card-title text-slate-800 mb-6">
                     <i class="fas fa-clipboard-list text-indigo-500"></i>
                     Formulir Pendaftaran Poli

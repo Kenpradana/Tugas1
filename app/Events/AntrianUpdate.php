@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AntrianUpdate implements ShouldBroadcast // WAJIB: ShouldBroadcast
+class AntrianUpdate implements ShouldBroadcast 
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
